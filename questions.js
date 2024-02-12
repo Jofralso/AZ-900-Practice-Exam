@@ -5,7 +5,7 @@ fetch('questions.json')
   .then(response => response.json())
   .then(data => {
     questions = data;
-    questions = selectRandomQuestions(questions, 30);
+    questions = selectRandomQuestions(questions, 50);
     showQuestion();
   })
   .catch(error => console.error('Error fetching questions:', error));
