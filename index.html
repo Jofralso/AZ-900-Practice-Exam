@@ -11,6 +11,9 @@
       color: #fff;
       margin: 0;
       padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
     #quiz-container {
       max-width: 800px;
@@ -22,6 +25,8 @@
     }
     .question {
       margin-bottom: 20px;
+      border-bottom: 2px solid #555; /* Line between questions and answers */
+      padding-bottom: 20px; /* Space between questions and answers */
     }
     .options {
       margin-bottom: 10px;
@@ -32,6 +37,8 @@
     }
     h1{
       margin: 10px;
+      
+      
     }
     .answer-box {
       padding: 5px;
@@ -52,7 +59,7 @@
     .azure-button {
       display: block;
       margin-top: 10px;
-      padding: 10px;
+      padding: 15px;
       background-color: #0078d4; /* Azure Blue */
       color: #fff;
       border: none;
