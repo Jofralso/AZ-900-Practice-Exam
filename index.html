@@ -96,6 +96,13 @@
       color: #0078d4; /* Azure Blue */
       text-decoration: none;
     }
+
+    .passing-info {
+      margin-top: 20px;
+      font-weight: bold;
+      color: #0078d4; /* Azure Blue */
+    }
+    
   </style>
   <script src="questions.js" defer></script>
 </head>
@@ -104,6 +111,8 @@
   <h1>AZ-900 Practice Exam</h1>
   <div id="quiz-container"></div>
   <button class="azure-button" onclick="checkAnswer()">Submit</button>
+  <!-- Add this element before the footer -->
+  <div class="passing-info"></div>
 
   <div class="footer">
     <p>This practice exam is created by Francisco Soares (<a href="https://github.com/jofralso" target="_blank">jofralso</a>).</p>

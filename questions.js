@@ -43,14 +43,14 @@ function showQuestion() {
 
 function showAnswer(index) {
   var questionElement = document.querySelectorAll('.question')[index];
-  var userSelectedWrong = false; // Flag to check if the user selected a wrong answer
+  var userSelectedCorrect = true; // Flag to check if the user selected all correct answers
 
   questionElement.querySelectorAll('input').forEach((input, i) => {
     if (questions[index].correct_answers.includes(i)) {
       input.parentElement.classList.add('correct-answer');
     } else if (input.checked) {
       input.parentElement.classList.add('incorrect-answer');
-      userSelectedWrong = true;
+      userSelectedCorrect = false;
     }
     input.disabled = true; // Lock the answer regardless of correct or incorrect
   });
@@ -59,14 +59,13 @@ function showAnswer(index) {
   var answerButton = questionElement.querySelector('.show-answer');
   answerButton.disabled = true;
 
-  // If the user selected a wrong answer, unlock the incorrect options
-  // if (userSelectedWrong) {
-  //    questionElement.querySelectorAll('input:not(:checked)').forEach((input) => {
-  //    input.disabled = false;
-  //    });
-  // }
+  // If the user selected all correct answers, unlock the incorrect options
+  if (!userSelectedCorrect) {
+    questionElement.querySelectorAll('input:not(:checked)').forEach((input) => {
+      input.disabled = false;
+    });
+  }
 }
-
 
 function lockAnswer(index, clickedInput) {
   var questionElement = document.querySelectorAll('.question')[index];
@@ -81,55 +80,65 @@ function lockAnswer(index, clickedInput) {
   });
 }
 
+
 function checkAnswer() {
   var userAnswers = [];
+  var correctCount = 0; // Track the total number of correct answers
 
   questions.forEach((question, index) => {
     var selectedOptions = document.querySelectorAll(`input[name="question${index}"]:checked`);
     var userSelection = Array.from(selectedOptions).map(option => parseInt(option.value));
-    userAnswers.push({ question: index, selectedOptions: userSelection });
+
+    // Check if the user selected all correct options for the question
+    var userSelectedCorrect = userSelection.length > 0 && userSelection.every((selectedOption) => question.correct_answers.includes(selectedOption));
+
+    if (userSelectedCorrect) {
+      correctCount++;
+    }
+
+    userAnswers.push({ question: index, selectedOptions: userSelection, userSelectedCorrect: userSelectedCorrect });
   });
 
-  // Display correct and incorrect answers
+  // Display correct and incorrect answers along with the correct count
   var quizContainer = document.getElementById('quiz-container');
-  var correctCount = 0;
-
-  questions.forEach((question, index) => {
+  userAnswers.forEach((answer, index) => {
     var questionElement = quizContainer.querySelector(`.question:nth-child(${index + 1})`);
 
     questionElement.querySelectorAll('input').forEach((input, i) => {
-      if (userAnswers[index].selectedOptions.includes(i)) {
-        // User selected this option
-        if (question.correct_answers.includes(i)) {
+      if (answer.selectedOptions.includes(i)) {
+        if (questions[index].correct_answers.includes(i)) {
           input.parentElement.classList.add('correct-answer');
-          correctCount++;
         } else {
           input.parentElement.classList.add('incorrect-answer');
         }
-      } else {
-        // User did not select this option
-        if (question.correct_answers.includes(i)) {
-          input.parentElement.classList.add('correct-answer');
-        }
+      } else if (questions[index].correct_answers.includes(i)) {
+        input.parentElement.classList.add('correct-answer');
       }
       input.disabled = true; // Disable further changes after checking answers
     });
   });
 
-  // Display percentage of correct answers
+  // Display percentage of correct answers along with the correct count
   var resultElement = document.createElement('div');
   resultElement.classList.add('result');
 
   var percentage = (correctCount / questions.length) * 100;
-  resultElement.textContent = `Your Score: ${percentage.toFixed(2)}%`;
+  var passPercentage = 70;
+  resultElement.textContent = `Your Score: ${percentage.toFixed(2)}% (${correctCount} out of ${questions.length} correct)`;
 
   // Apply different styles based on the result
-  if (percentage >= 70) {
+  if (percentage >= passPercentage) {
     resultElement.style.color = 'green'; // Green if passed
   } else {
     resultElement.style.color = 'red'; // Red if failed
   }
 
   quizContainer.appendChild(resultElement);
-}
 
+  // Display passing criteria information
+  var passingInfoElement = document.createElement('div');
+  passingInfoElement.classList.add('passing-info');
+  var questionsToPass = Math.ceil((passPercentage * questions.length) / 100);
+  passingInfoElement.textContent = `To pass, you need to answer at least ${questionsToPass} questions correctly (over ${passPercentage}%)`;
+  quizContainer.appendChild(passingInfoElement);
+}
