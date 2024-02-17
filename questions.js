@@ -43,29 +43,30 @@ function showQuestion() {
 
 function showAnswer(index) {
   var questionElement = document.querySelectorAll('.question')[index];
-  var userSelectedCorrect = true; // Flag to check if the user selected all correct answers
+  var userSelectedWrong = false; // Flag to check if the user selected a wrong answer
 
   questionElement.querySelectorAll('input').forEach((input, i) => {
     if (questions[index].correct_answers.includes(i)) {
       input.parentElement.classList.add('correct-answer');
     } else if (input.checked) {
       input.parentElement.classList.add('incorrect-answer');
-      userSelectedCorrect = false;
+      userSelectedWrong = true;
     }
-    input.disabled = true; // Lock the answer regardless of correct or incorrect
+    input.disabled = true; // Lock all answers for the specific question
   });
 
   // Disable the "Show Answer" button after showing the correct answer
   var answerButton = questionElement.querySelector('.show-answer');
   answerButton.disabled = true;
 
-  // If the user selected all correct answers, unlock the incorrect options
-  if (!userSelectedCorrect) {
-    questionElement.querySelectorAll('input:not(:checked)').forEach((input) => {
-      input.disabled = false;
-    });
-  }
+  // If the user selected a wrong answer, unlock the incorrect options
+  // if (userSelectedWrong) {
+  //   questionElement.querySelectorAll('input:not(:checked)').forEach((input) => {
+  //     input.disabled = false;
+  //   });
+  // }
 }
+
 
 function lockAnswer(index, clickedInput) {
   var questionElement = document.querySelectorAll('.question')[index];
