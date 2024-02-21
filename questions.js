@@ -10,19 +10,19 @@ fetch('questions.json')
   })
   .catch(error => console.error('Error fetching questions:', error));
 
-  function selectRandomQuestions(allQuestions, numQuestions) {
-    // Make a copy of the original array to avoid modifying the input array
-    const shuffledQuestions = [...allQuestions];
+function selectRandomQuestions(allQuestions, numQuestions) {
+  // Make a copy of the original array to avoid modifying the input array
+  const shuffledQuestions = [...allQuestions];
   
-    // Shuffle the array using the Fisher-Yates algorithm
-    for (let i = shuffledQuestions.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [shuffledQuestions[i], shuffledQuestions[j]] = [shuffledQuestions[j], shuffledQuestions[i]];
-    }
-  
-    // Select the first numQuestions elements
-    return shuffledQuestions.slice(0, numQuestions);
+  // Shuffle the array using the Fisher-Yates algorithm
+  for (let i = shuffledQuestions.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffledQuestions[i], shuffledQuestions[j]] = [shuffledQuestions[j], shuffledQuestions[i]];
   }
+  
+  // Select the first numQuestions elements
+  return shuffledQuestions.slice(0, numQuestions);
+}
   
 
 function showQuestion() {

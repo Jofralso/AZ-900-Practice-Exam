@@ -3160,8 +3160,8 @@
       "A computer that runs Chrome OS and uses Azure Cloud Shell."
     ],
     "correct_answers": [
-      0,
       1,
+      2,
       4
     ]
   },
