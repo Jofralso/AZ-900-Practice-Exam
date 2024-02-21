@@ -1,42 +1,37 @@
 // questions.js
 var questions = [];
-var shownQuestionIndices = []; // Array to store indices of already shown questions
 
 fetch('questions.json')
   .then(response => response.json())
   .then(data => {
     questions = data;
+    questions = selectRandomQuestions(questions, 50);
     showQuestion();
   })
   .catch(error => console.error('Error fetching questions:', error));
 
-function selectRandomQuestions(numQuestions) {
-  const remainingQuestions = questions.filter((_, index) => !shownQuestionIndices.includes(index));
-  const numRemainingQuestions = remainingQuestions.length;
-
-  if (numQuestions > numRemainingQuestions) {
-    console.error('Not enough remaining questions.');
-    return [];
-  }
-
-  const selectedIndices = [];
-  while (selectedIndices.length < numQuestions) {
-    const randomIndex = Math.floor(Math.random() * numRemainingQuestions);
-    if (!selectedIndices.includes(randomIndex)) {
-      selectedIndices.push(randomIndex);
+  function selectRandomQuestions(allQuestions, numQuestions) {
+    // Make a copy of the original array to avoid modifying the input array
+    const shuffledQuestions = [...allQuestions];
+  
+    // Shuffle the array using the Fisher-Yates algorithm
+    for (let i = shuffledQuestions.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffledQuestions[i], shuffledQuestions[j]] = [shuffledQuestions[j], shuffledQuestions[i]];
     }
+  
+    // Select the first numQuestions elements
+    return shuffledQuestions.slice(0, numQuestions);
   }
-
-  return selectedIndices.map(index => remainingQuestions[index]);
-}
+  
 
 function showQuestion() {
   var quizContainer = document.getElementById('quiz-container');
   quizContainer.innerHTML = '';
 
-  var selectedQuestions = selectRandomQuestions(50);
+  var answersShown = false; // Flag to check if answers have been shown
 
-  selectedQuestions.forEach((question, index) => {
+  questions.forEach((question, index) => {
     var questionElement = document.createElement('div');
     questionElement.classList.add('question');
     questionElement.innerHTML = `
@@ -44,7 +39,7 @@ function showQuestion() {
       <div class="options">
         ${question.options.map((option, i) => `
           <label>
-            <input type="checkbox" name="question${index}" value="${i}" onclick="lockAnswer(${index}, this)">
+            <input type="checkbox" name="question${index}" value="${i}" onclick="lockAnswer(${index}, this)" ${answersShown ? 'disabled' : ''}>
             ${option}
           </label><br>
         `).join('')}
