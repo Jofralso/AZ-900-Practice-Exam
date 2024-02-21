@@ -1,27 +1,42 @@
 // questions.js
 var questions = [];
+var shownQuestionIndices = []; // Array to store indices of already shown questions
 
 fetch('questions.json')
   .then(response => response.json())
   .then(data => {
     questions = data;
-    questions = selectRandomQuestions(questions, 50);
     showQuestion();
   })
   .catch(error => console.error('Error fetching questions:', error));
 
-function selectRandomQuestions(allQuestions, numQuestions) {
-  const shuffledQuestions = allQuestions.sort(() => Math.random() - 0.5);
-  return shuffledQuestions.slice(0, numQuestions);
+function selectRandomQuestions(numQuestions) {
+  const remainingQuestions = questions.filter((_, index) => !shownQuestionIndices.includes(index));
+  const numRemainingQuestions = remainingQuestions.length;
+
+  if (numQuestions > numRemainingQuestions) {
+    console.error('Not enough remaining questions.');
+    return [];
+  }
+
+  const selectedIndices = [];
+  while (selectedIndices.length < numQuestions) {
+    const randomIndex = Math.floor(Math.random() * numRemainingQuestions);
+    if (!selectedIndices.includes(randomIndex)) {
+      selectedIndices.push(randomIndex);
+    }
+  }
+
+  return selectedIndices.map(index => remainingQuestions[index]);
 }
 
 function showQuestion() {
   var quizContainer = document.getElementById('quiz-container');
   quizContainer.innerHTML = '';
 
-  var answersShown = false; // Flag to check if answers have been shown
+  var selectedQuestions = selectRandomQuestions(50);
 
-  questions.forEach((question, index) => {
+  selectedQuestions.forEach((question, index) => {
     var questionElement = document.createElement('div');
     questionElement.classList.add('question');
     questionElement.innerHTML = `
@@ -29,7 +44,7 @@ function showQuestion() {
       <div class="options">
         ${question.options.map((option, i) => `
           <label>
-            <input type="checkbox" name="question${index}" value="${i}" onclick="lockAnswer(${index}, this)" ${answersShown ? 'disabled' : ''}>
+            <input type="checkbox" name="question${index}" value="${i}" onclick="lockAnswer(${index}, this)">
             ${option}
           </label><br>
         `).join('')}
@@ -52,6 +67,7 @@ function showAnswer(index) {
       input.parentElement.classList.add('incorrect-answer');
       userSelectedWrong = true;
     }
+    else{}
     input.disabled = true; // Lock all answers for the specific question
   });
 
